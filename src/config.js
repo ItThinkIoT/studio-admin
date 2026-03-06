@@ -23,8 +23,12 @@ export const config = {
     bucketName: import.meta.env.VITE_AWS_BUCKET || "dev.guihgo.studio",
     credentials: {
       "7f159792ceb947e7601c086304d600fc53efedb9b0c0708613f42237fe412793": { /*  keccak256(0xaddress.toLowerCase()) */
-        accessKeyId: "AKIAQSHN3IMECWKYM4XD",
-        secretAccessKey: "mn4TepEuHCtL+f/pqWvMIxohox+dcdpJZErnwIrFXuYMFRzWk6Pnt7yM82xw0ahQ/VlN1y4kXtgj4mgWDeHE58lWQc8=",
+        accessKeyId: "AKIAQSHN3IMEODUOVHPV",
+        secretAccessKey: "OSbkASFEGEN8EsIHkvDP+366Ku8A5rX/hAdySUJSvgBeyL/k9hW2XHn73VIh5cJuLJ/M6GDbmEa6x1CJlkRBuV2sp6o=",
+      },
+      "90ca04421666e9204369dcce766192f6c2dbdc76171a4ea25c639363a191623d": {
+        accessKeyId: "AKIAQSHN3IMEJCJC6PUE",
+        secretAccessKey: "200zGhNeNGg9dqENjwODPg0v/D0mgrPRqSTanrh1I1WquIfwNsQAgBLP8rk+gGqGxA14J4f+vXzW0eqbw4b613fW5Vc=",
       }
     }
   }

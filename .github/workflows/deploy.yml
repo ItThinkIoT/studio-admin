@@ -38,6 +38,10 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm install
+      - name: Prepare enviroments variables
+        run: |
+          echo "VITE_AWS_REGION=${{ vars.VITE_AWS_REGION }}" > .env
+          echo "VITE_AWS_BUCKET=${{ vars.VITE_AWS_BUCKET }}" >> .env
       - name: Build
         run: npm run build
       - name: Setup Pages
