@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg-dark: #0f172a; /* slate-900 */
+    --color-bg-card: #1e293b; /* slate-800 */
+    --color-border: #334155;  /* slate-700 */
+    --color-emerald: #10b981; /* emerald-500 */
+    --color-emerald-hover: #059669; /* emerald-600 */
+    
+    --transition-speed: 0.3s;
+  }
+
+  body {
+    @apply bg-brand-900 text-gray-100 font-sans min-h-screen antialiased selection:bg-brand-emerald selection:text-white;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-brand-800/80 backdrop-blur-md border border-brand-700 rounded-2xl shadow-xl;
+  }
+  
+  .btn-primary {
+    @apply px-6 py-2.5 bg-brand-emerald hover:bg-brand-emeraldHover text-white font-medium rounded-lg 
+           transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-brand-emerald/20 active:scale-95 flex items-center justify-center gap-2;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-2.5 bg-brand-800 hover:bg-brand-700 text-gray-300 font-medium rounded-lg border border-brand-700
+           transition-all duration-300 flex items-center justify-center gap-2;
+  }
+
+  .dropzone {
+    @apply w-full h-64 border-2 border-dashed border-brand-700 rounded-2xl flex flex-col items-center justify-center
+           transition-all duration-300 bg-brand-800/30 cursor-pointer hover:bg-brand-800/50 hover:border-brand-emerald/50 relative overflow-hidden;
+  }
+  
+  .dropzone.drag-active {
+    @apply border-brand-emerald bg-brand-emerald/10 shadow-[0_0_30px_rgba(16,185,129,0.15)] scale-[1.01];
+  }
+}

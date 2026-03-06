@@ -1,0 +1,31 @@
+// Global application configuration to allow easy parameterization
+
+export const config = {
+  // Image Processing Defaults
+  image: {
+    originalMaxWidth: 1920, // Optional max width for original image, use null to keep original size
+    thumbMaxWidth: 300,     // Max width for thumbnail
+    quality: 0.85,          // JPEG/WEBP quality (0 to 1)
+  },
+
+  // UI Strings
+  ui: {
+    connectText: "Connect MetaMask",
+    uploadingText: "Uploading to S3...",
+  },
+
+  // AWS S3 Configuration
+  // IMPORTANT: For a production app, do NOT hardcode secret keys in the frontend. 
+  // Prefer using an AWS Cognito Identity Pool, or generate Pre-signed URLs via a backend.
+  // For the sake of this frontend-only test, configure it below.
+  aws: {
+    region: import.meta.env.VITE_AWS_REGION || "sa-east-1",
+    bucketName: import.meta.env.VITE_AWS_BUCKET || "dev.guihgo.studio",
+    credentials: {
+      "7f159792ceb947e7601c086304d600fc53efedb9b0c0708613f42237fe412793": { /*  keccak256(0xaddress.toLowerCase()) */
+        accessKeyId: "AKIAQSHN3IMECWKYM4XD",
+        secretAccessKey: "mn4TepEuHCtL+f/pqWvMIxohox+dcdpJZErnwIrFXuYMFRzWk6Pnt7yM82xw0ahQ/VlN1y4kXtgj4mgWDeHE58lWQc8=",
+      }
+    }
+  }
+};

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web3 Image Studio</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto flex flex-col gap-8">
+      
+      <!-- Header -->
+      <header class="flex flex-col md:flex-row items-center justify-between gap-4 glass-panel p-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-brand-emerald flex items-center justify-center shadow-lg shadow-brand-emerald/20">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2-2v12a2 2 0 002 2z"></path></svg>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold tracking-tight text-white">Web3 Studio</h1>
+            <p class="text-brand-emerald text-sm">Secure Web3 UI & S3 Storage</p>
+          </div>
+        </div>
+        
+        <!-- Wallet Connection -->
+        <div id="wallet-container" class="flex items-center gap-3">
+          <div id="wallet-info" class="hidden items-center gap-2 bg-brand-900 border border-brand-700 rounded-lg px-4 py-2">
+            <div class="w-2 h-2 rounded-full bg-brand-emerald animate-pulse"></div>
+            <span id="wallet-address" class="text-sm font-medium text-gray-300 font-mono">0x...</span>
+            <button id="btn-config-open" class="ml-2 text-gray-400 hover:text-emerald-400 transition-colors" title="Settings">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </button>
+            <button id="btn-disconnect" class="ml-2 text-gray-400 hover:text-red-400 transition-colors" title="Disconnect">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </button>
+          </div>
+          <button id="btn-connect" class="btn-primary">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+            Connect MetaMask
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Workspace (Hidden until connected) -->
+      <main id="workspace" class="hidden flex-col gap-6 opacity-0 transition-opacity duration-500">
+        
+        <!-- Dropzone -->
+        <section class="glass-panel p-6 md:p-10">
+          <div id="dropzone" class="dropzone group">
+            <input type="file" id="file-input" class="hidden" accept="image/png, image/jpeg, image/webp" multiple />
+            
+            <div class="absolute inset-0 bg-brand-emerald/5 rounded-2xl scale-0 group-hover:scale-100 transition-transform duration-500 origin-center"></div>
+            
+            <div class="relative z-10 flex flex-col items-center pointer-events-none">
+              <div class="w-16 h-16 mb-4 rounded-full bg-brand-800 border border-brand-700 flex items-center justify-center group-hover:bg-brand-emerald group-hover:border-brand-emerald group-hover:text-white transition-all duration-300 shadow-xl">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+              </div>
+              <h3 class="text-xl font-semibold text-white mb-2">Drag & Drop Image Here</h3>
+              <p class="text-gray-400 text-sm text-center max-w-sm">Supports JPG, PNG, WEBP. <br>The image will be automatically resized for optimal resolution.</p>
+              <button id="btn-browse" class="mt-6 btn-secondary pointer-events-auto">Browse Files</button>
+            </div>
+            
+            <!-- Tech grid background effect -->
+            <div class="absolute inset-0 pointer-events-none" style="background-image: radial-gradient(var(--color-border) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.1;"></div>
+          </div>
+        </section>
+
+        <!-- Preview & Progress Area (Hidden initially) -->
+        <section id="preview-section" class="hidden glass-panel p-6 overflow-hidden relative">
+          
+          <!-- Configuration Inputs (Moved from dropzone) -->
+          <div class="mb-6 flex flex-col sm:flex-row gap-4 border-b border-brand-700 pb-6">
+            <div class="flex-1 flex flex-col gap-2">
+              <label for="category-select" class="text-sm font-medium text-gray-300">Target Folder <span class="text-brand-emerald">*</span></label>
+              <select id="category-select" class="bg-brand-900 border border-brand-700 text-white text-sm rounded-lg focus:ring-brand-emerald focus:border-brand-emerald block w-full p-2.5 outline-none transition-colors appearance-none" required>
+                <option value="gallery">Gallery</option>
+                <option value="external">External</option>
+              </select>
+            </div>
+            
+            <div class="flex-[2] flex flex-col gap-2">
+              <label for="album-name" class="text-sm font-medium text-gray-300">Album Name <span class="text-brand-emerald">*</span></label>
+              <input type="text" id="album-name" placeholder="Required: e.g., Summer Trip 2026" class="bg-brand-900 border border-brand-700 text-white text-sm rounded-lg focus:ring-brand-emerald focus:border-brand-emerald block w-full p-2.5 outline-none transition-colors" required />
+            </div>
+          </div>
+
+          <div class="flex justify-between items-end mb-4 border-b border-brand-700 pb-2">
+             <h4 class="text-lg font-medium text-white">Selected Files (<span id="file-count">0</span>)</h4>
+             <span class="text-sm text-brand-emerald font-mono">Total: <span id="total-size">0 KB</span></span>
+          </div>
+
+          <!-- Dynamic Gallery Grid -->
+          <div id="preview-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+            <!-- Items injected by main.js -->
+          </div>
+
+          <!-- Add More Button -->
+          <div class="mt-4 flex justify-center">
+            <button id="btn-add-more" class="flex items-center gap-2 text-sm text-brand-emerald hover:text-white border border-brand-emerald/50 hover:border-brand-emerald bg-brand-emerald/10 hover:bg-brand-emerald/20 px-4 py-2 rounded-lg transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              Add More Photos
+            </button>
+          </div>
+
+          <!-- Actions & Progress -->
+          <div class="mt-8 pt-6 border-t border-brand-700 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex-1 w-full">
+              <!-- Progress Bar -->
+              <div id="upload-progress-container" class="hidden w-full space-y-2">
+                <div class="flex justify-between text-xs font-mono">
+                  <span class="text-gray-400" id="upload-status">Uploading to S3...</span>
+                  <span class="text-brand-emerald font-bold" id="upload-percent">0%</span>
+                </div>
+                <div class="h-1.5 w-full bg-brand-900 rounded-full overflow-hidden">
+                  <div id="upload-bar" class="h-full bg-brand-emerald w-0 transition-all duration-300 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex gap-3 w-full md:w-auto mt-4 md:mt-0">
+               <button id="btn-cancel" class="btn-secondary flex-1 md:flex-none">Cancel</button>
+               <button id="btn-upload" class="btn-primary flex-1 md:flex-none px-8">Upload to S3</button>
+            </div>
+          </div>
+          
+          <!-- Success Overlay -->
+          <div id="success-overlay" class="absolute inset-0 bg-brand-800/95 backdrop-blur-sm z-20 hidden flex-col items-center justify-center">
+            <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Upload Complete!</h3>
+            <p class="text-gray-400 text-sm mb-6">Files safely stored in AWS S3.</p>
+            <button id="btn-upload-new" class="btn-secondary">Upload New Image</button>
+          </div>
+        </section>
+
+      </main>
+      
+      <!-- Connect Warning -->
+      <div id="connect-warning" class="glass-panel p-10 flex flex-col items-center justify-center text-center mt-10">
+        <svg class="w-16 h-16 text-brand-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+        <h2 class="text-xl font-semibold text-white mb-2">Authentication Required</h2>
+        <p class="text-gray-400 max-w-md">Please connect your MetaMask wallet to access the secure Web3 storage studio.</p>
+      </div>
+      
+    </div>
+
+    <!-- Encryption Tool Modal -->
+    <div id="encryption-tool-modal" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-md items-center justify-center p-4">
+      <div class="bg-brand-900 border border-brand-700 rounded-xl max-w-lg w-full p-6 shadow-2xl relative">
+        <button id="btn-close-tool" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        
+        <h2 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+          <svg class="w-5 h-5 text-brand-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          Encryption Tool
+        </h2>
+        <p class="text-xs text-gray-400 mb-6">Enter any text. It will be securely encrypted offline using a unique key derived from your MetaMask signature.</p>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Raw Text</label>
+            <textarea id="tool-raw-input" class="bg-brand-800 border border-brand-700 text-white rounded-lg block w-full outline-none p-3 h-24 resize-none focus:border-brand-emerald transition-colors" placeholder="Paste your Access Key, Secret Key, or any secret text here..."></textarea>
+          </div>
+          
+          <button id="btn-tool-encrypt" class="w-full btn-primary flex justify-center items-center gap-2">
+            Encrypt Text
+          </button>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Encrypted Output (Base64)</label>
+            <textarea id="tool-encrypted-output" class="bg-black/50 border border-brand-700 text-brand-emerald font-mono text-xs rounded-lg block w-full outline-none p-3 h-32 resize-none" readonly placeholder="Encrypted payload will appear here..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AWS Configuration Modal -->
+    <div id="aws-config-modal" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-md items-center justify-center p-4">
+      <div class="bg-brand-900 border border-brand-700 rounded-xl max-w-md w-full p-6 shadow-2xl relative">
+        <button id="btn-close-config" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        
+        <h2 class="text-xl font-bold text-white mb-2">AWS Configuration</h2>
+        <p class="text-xs text-gray-400 mb-6">Enter your AWS keys. They will be encrypted locally using your MetaMask wallet and saved to local storage.</p>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Access Key ID</label>
+            <input type="password" id="aws-access-key-input" class="bg-brand-800 border-brand-700 text-white rounded-lg block w-full outline-none p-2.5" placeholder="AKIA..." />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Secret Access Key</label>
+            <input type="password" id="aws-secret-key-input" class="bg-brand-800 border-brand-700 text-white rounded-lg block w-full outline-none p-2.5" placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" />
+          </div>
+          
+          <button id="btn-save-encrypted-keys" class="w-full btn-primary mt-4 flex justify-center items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            Encrypt & Save Keys
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image Viewer Modal -->
+    <div id="image-viewer-modal" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-md items-center justify-center p-4 md:p-10 select-none">
+      
+      <!-- Top controls -->
+      <div class="absolute top-4 right-4 md:top-6 md:right-6 flex items-center gap-3 z-50">
+        <button id="btn-viewer-cover" class="text-gray-400 hover:text-emerald-500 bg-gray-800/80 hover:bg-gray-800 rounded-full p-2.5 transition-colors shadow-lg" title="Set as Cover">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+        </button>
+        <button id="btn-viewer-delete" class="text-gray-400 hover:text-red-500 bg-gray-800/80 hover:bg-gray-800 rounded-full p-2.5 transition-colors shadow-lg" title="Remove from queue">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </button>
+        <button id="btn-close-viewer" class="text-gray-400 hover:text-white bg-gray-800/80 hover:bg-gray-800 rounded-full p-2.5 transition-colors shadow-lg" title="Close">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <!-- Navigation Left -->
+      <button id="btn-viewer-prev" class="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 text-white/50 hover:text-white bg-black/20 hover:bg-black/50 p-3 rounded-full transition-all z-50">
+        <svg class="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+      </button>
+      
+      <!-- Navigation Right -->
+      <button id="btn-viewer-next" class="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 text-white/50 hover:text-white bg-black/20 hover:bg-black/50 p-3 rounded-full transition-all z-50">
+        <svg class="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </button>
+
+      <div class="relative max-w-6xl w-full max-h-[85vh] flex flex-col items-center justify-center">
+        <img id="viewer-image" src="" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl" />
+        
+        <div id="viewer-info" class="absolute bottom-[-3rem] w-full text-white text-center flex flex-col items-center justify-center">
+          <p id="viewer-filename" class="font-medium text-lg text-gray-200"></p>
+          <div class="flex items-center gap-3 mt-1 text-sm text-brand-emerald font-mono">
+            <span id="viewer-filesize"></span>
+            <span class="text-gray-600">|</span>
+            <span id="viewer-counter" class="text-gray-400"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
