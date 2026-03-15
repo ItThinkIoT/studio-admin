@@ -12,7 +12,7 @@ export async function processImageFiles(file) {
   const imgElement = await loadImage(imageUrl);
 
   // Process Original (Apply max width if configured)
-  const originalBlob = await resizeImage(
+  const { blob: originalBlob, width: originalWidth, height: originalHeight } = await resizeImage(
     imgElement,
     config.image.originalMaxWidth || imgElement.width,
     file.type,
@@ -20,7 +20,7 @@ export async function processImageFiles(file) {
   );
 
   // Process Thumbnail
-  const thumbBlob = await resizeImage(
+  const { blob: thumbBlob, width: thumbWidth, height: thumbHeight } = await resizeImage(
     imgElement,
     config.image.thumbMaxWidth,
     file.type,
@@ -35,12 +35,16 @@ export async function processImageFiles(file) {
     original: {
       blob: originalBlob,
       url: URL.createObjectURL(originalBlob),
-      name: `${baseName}${extension}`
+      name: `${baseName}_${originalWidth}x${originalHeight}${extension}`,
+      width: originalWidth,
+      height: originalHeight
     },
     thumbnail: {
       blob: thumbBlob,
       url: URL.createObjectURL(thumbBlob),
-      name: `${baseName}_thumb${extension}`
+      name: `${baseName}_${thumbWidth}x${thumbHeight}_thumb${extension}`,
+      width: thumbWidth,
+      height: thumbHeight
     }
   };
 }
@@ -84,7 +88,7 @@ function resizeImage(img, maxWidth, mimeType, quality) {
 
     // Convert back to blob
     canvas.toBlob((blob) => {
-      resolve(blob);
+      resolve({ blob, width, height });
     }, mimeType, quality);
   });
 }
