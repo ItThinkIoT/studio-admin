@@ -3,7 +3,7 @@
 export const config = {
   // Image Processing Defaults
   image: {
-    originalMaxWidth: null, //1920, // Optional max width for original image, use null to keep original size
+    webMaxWidth: 1280, //null, //1920, // Optional max width for original image, use null to keep original size
     thumbMaxWidth: 300,     // Max width for thumbnail
     quality: 0.85,          // JPEG/WEBP quality (0 to 1)
   },

@@ -11,12 +11,17 @@ export async function processImageFiles(file) {
   const imageUrl = await readFileAsDataURL(file);
   const imgElement = await loadImage(imageUrl);
 
-  // Process Original (Apply max width if configured)
-  const { blob: originalBlob, width: originalWidth, height: originalHeight } = await resizeImage(
+  // Keep original image without resizing
+  const originalBlob = file;
+  const originalWidth = imgElement.width;
+  const originalHeight = imgElement.height;
+
+  // Process Thumbnail
+  const { blob: webBlob, width: webWidth, height: webHeight } = await resizeImage(
     imgElement,
-    config.image.originalMaxWidth || imgElement.width,
+    config.image.webMaxWidth,
     file.type,
-    1.0 // Original usually highest quality or original blob
+    config.image.quality
   );
 
   // Process Thumbnail
@@ -38,6 +43,13 @@ export async function processImageFiles(file) {
       name: `${baseName}_${originalWidth}x${originalHeight}${extension}`,
       width: originalWidth,
       height: originalHeight
+    },
+    web: {
+      blob: webBlob,
+      url: URL.createObjectURL(webBlob),
+      name: `${baseName}_${webWidth}x${webHeight}_web${extension}`,
+      width: webWidth,
+      height: webHeight
     },
     thumbnail: {
       blob: thumbBlob,

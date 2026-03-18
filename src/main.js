@@ -185,7 +185,7 @@ function renderPreviewGrid() {
   let totalBytes = 0;
 
   processedImages.forEach((processed, index) => {
-    totalBytes += processed.original.blob.size;
+    totalBytes += processed.original.blob.size + processed.web.blob.size + processed.thumbnail.blob.size;
     const card = createPreviewCard(processed, index);
     previewGrid.appendChild(card);
   });
@@ -280,10 +280,14 @@ function createPreviewCard(processed, index) {
   const origSize = document.createElement('span');
   origSize.innerHTML = `Orig: <span class="text-white">${formatBytes(processed.original.blob.size)}</span>`;
 
+  const webSize = document.createElement('span');
+  webSize.innerHTML = `Web: <span class="text-brand-emerald">${formatBytes(processed.web.blob.size)}</span>`;
+
   const thumbSize = document.createElement('span');
   thumbSize.innerHTML = `Thumb: <span class="text-brand-emerald">${formatBytes(processed.thumbnail.blob.size)}</span>`;
 
   sizeRow.appendChild(origSize);
+  sizeRow.appendChild(webSize);
   sizeRow.appendChild(thumbSize);
 
   info.appendChild(nameRow);
@@ -300,6 +304,7 @@ function removeImage(id) {
   const item = processedImages.find(i => i.id === id);
   if (item) {
     URL.revokeObjectURL(item.original.url);
+    URL.revokeObjectURL(item.web.url);
     URL.revokeObjectURL(item.thumbnail.url);
   }
 
@@ -505,8 +510,8 @@ function setupListeners() {
     btnCancel.disabled = true;
     uploadProgressContainer.classList.remove('hidden');
 
-    // Total files: (Original + Thumb) for each image. Plus 1 extra if a cover is selected.
-    const totalFiles = (processedImages.length * 2) + (coverImageId ? 1 : 0);
+    // Total files: (Original + Web + Thumb) for each image. Plus 1 extra if a cover is selected.
+    const totalFiles = (processedImages.length * 3) + (coverImageId ? 1 : 0);
     let filesUploaded = 0;
 
     try {
@@ -515,12 +520,17 @@ function setupListeners() {
       // Upload sequentially to avoid choking the browser or AWS limits
       for (const item of processedImages) {
 
+        let webName = item.web.name;
         let thumbName = item.thumbnail.name;
         let origName = item.original.name;
 
         const lastDotOrig = origName.lastIndexOf('.');
         const origBase = lastDotOrig !== -1 ? origName.substring(0, lastDotOrig) : origName;
         const origExt = lastDotOrig !== -1 ? origName.substring(lastDotOrig) : '';
+
+        const lastDotWeb = webName.lastIndexOf('.');
+        const webBase = lastDotWeb !== -1 ? webName.substring(0, lastDotWeb) : webName;
+        const webExt = lastDotWeb !== -1 ? webName.substring(lastDotWeb) : '';
 
         const lastDotThumb = thumbName.lastIndexOf('.');
         const thumbBase = lastDotThumb !== -1 ? thumbName.substring(0, lastDotThumb) : thumbName;
@@ -529,14 +539,20 @@ function setupListeners() {
         // Determine if this is the cover image
         const isCover = item.id === coverImageId;
 
-        // Append _cover for original and thumb filenames
+        // Append _cover for original, web and thumb filenames
         if (isCover) {
           thumbName = `${thumbBase}_cover${thumbExt}`;
+          webName = `${webBase}_cover${webExt}`;
           origName = `${origBase}_cover${origExt}`;
         }
 
         // Upload Thumbnail
         await uploadToS3(item.thumbnail.blob, thumbName, categoryName, albumName);
+        filesUploaded++;
+        updateProgress((filesUploaded / totalFiles) * 100);
+
+        // Upload Web Version
+        await uploadToS3(item.web.blob, webName, categoryName, albumName);
         filesUploaded++;
         updateProgress((filesUploaded / totalFiles) * 100);
 
@@ -580,6 +596,7 @@ function resetWorkspace() {
   // Free object URLs
   processedImages.forEach(item => {
     URL.revokeObjectURL(item.original.url);
+    URL.revokeObjectURL(item.web.url);
     URL.revokeObjectURL(item.thumbnail.url);
   });
 
