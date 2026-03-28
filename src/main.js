@@ -155,7 +155,8 @@ async function handleFiles(files) {
     for (const file of validFiles) {
       processedCount++;
       setProcessingState(true, processedCount, validFiles.length);
-      const processed = await processImageFiles(file);
+      const categoryName = document.getElementById('category-select').value;
+      const processed = await processImageFiles(file, categoryName === 'external');
       // add a unique ID for deletion tracking
       processed.id = Date.now() + Math.random().toString(16).slice(2);
       processedImages.push(processed);
@@ -480,6 +481,8 @@ function setupListeners() {
     }
   });
 
+  document.getElementById('category-select').addEventListener('change', handleCategoryChange);
+
   btnCancel.addEventListener('click', () => {
     resetWorkspace();
   });
@@ -493,6 +496,17 @@ function setupListeners() {
 
     const categoryName = document.getElementById('category-select').value; // 'gallery' or 'external'
     const albumName = albumInput.value.trim();
+
+    // Determine target folders based on category
+    let thumbFolder = categoryName;
+    let webFolder = categoryName;
+    let origFolder = categoryName;
+
+    if (categoryName === 'external') {
+      thumbFolder = 'external/public';
+      webFolder = 'external/public';
+      origFolder = 'external/hidden';
+    }
 
     // Validation
     if (!albumName) {
@@ -511,7 +525,7 @@ function setupListeners() {
     uploadProgressContainer.classList.remove('hidden');
 
     // Total files: (Original + Web + Thumb) for each image. Plus 1 extra if a cover is selected.
-    const totalFiles = (processedImages.length * 3) + (coverImageId ? 1 : 0);
+    let totalFiles = (processedImages.length * 3) + (coverImageId ? 1 : 0);
     let filesUploaded = 0;
 
     try {
@@ -547,24 +561,24 @@ function setupListeners() {
         }
 
         // Upload Thumbnail
-        await uploadToS3(item.thumbnail.blob, thumbName, categoryName, albumName);
+        await uploadToS3(item.thumbnail.blob, thumbName, thumbFolder, albumName);
         filesUploaded++;
         updateProgress((filesUploaded / totalFiles) * 100);
 
         // Upload Web Version
-        await uploadToS3(item.web.blob, webName, categoryName, albumName);
+        await uploadToS3(item.web.blob, webName, webFolder, albumName);
         filesUploaded++;
         updateProgress((filesUploaded / totalFiles) * 100);
 
         // Upload Original
-        await uploadToS3(item.original.blob, origName, categoryName, albumName);
+        await uploadToS3(item.original.blob, origName, origFolder, albumName);
         filesUploaded++;
         updateProgress((filesUploaded / totalFiles) * 100);
 
         // Upload a third special picture explicitly named 'cover.EXT'
         if (isCover) {
           const pureCoverName = `cover${thumbExt}`;
-          await uploadToS3(item.thumbnail.blob, pureCoverName, categoryName, albumName);
+          await uploadToS3(item.thumbnail.blob, pureCoverName, thumbFolder, albumName);
           filesUploaded++;
           updateProgress((filesUploaded / totalFiles) * 100);
         }
@@ -584,6 +598,40 @@ function setupListeners() {
       btnCancel.disabled = false;
     }
   });
+}
+
+async function handleCategoryChange() {
+  if (processedImages.length === 0) return;
+
+  const categoryName = document.getElementById('category-select').value;
+  const shouldWatermark = categoryName === 'external';
+
+  setProcessingState(true, 0, processedImages.length);
+
+  try {
+    for (let i = 0; i < processedImages.length; i++) {
+      const item = processedImages[i];
+      // Note: we use item.original.blob directly from the existing processed data
+      // This allows us to re-apply (or remove) the watermark logic
+      const newProcessed = await processImageFiles(item.original.blob, shouldWatermark);
+
+      // Preserve ID
+      newProcessed.id = item.id;
+
+      // Revoke old URLs to prevent memory leaks
+      URL.revokeObjectURL(item.original.url);
+      URL.revokeObjectURL(item.web.url);
+      URL.revokeObjectURL(item.thumbnail.url);
+
+      processedImages[i] = newProcessed;
+      setProcessingState(true, i + 1, processedImages.length);
+    }
+    renderPreviewGrid();
+  } catch (error) {
+    console.error("Error re-processing images on category change:", error);
+  } finally {
+    setProcessingState(false);
+  }
 }
 
 function updateProgress(percent) {

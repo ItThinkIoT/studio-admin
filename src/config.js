@@ -8,6 +8,8 @@ export const config = {
     quality: 0.85,          // JPEG/WEBP quality (0 to 1)
   },
 
+  watermarkText: "@Guihgo",
+
   // UI Strings
   ui: {
     connectText: "Connect MetaMask",

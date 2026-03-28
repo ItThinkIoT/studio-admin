@@ -3,7 +3,7 @@ import { config } from './config.js';
 /**
  * Main Image Processor using HTML5 Canvas
  */
-export async function processImageFiles(file) {
+export async function processImageFiles(file, shouldWatermark = false) {
   if (!file.type.match(/image.*/)) {
     throw new Error("File must be an image");
   }
@@ -16,12 +16,13 @@ export async function processImageFiles(file) {
   const originalWidth = imgElement.width;
   const originalHeight = imgElement.height;
 
-  // Process Thumbnail
+  // Process Web Version
   const { blob: webBlob, width: webWidth, height: webHeight } = await resizeImage(
     imgElement,
     config.image.webMaxWidth,
     file.type,
-    config.image.quality
+    config.image.quality,
+    shouldWatermark ? config.watermarkText : null
   );
 
   // Process Thumbnail
@@ -79,7 +80,7 @@ function loadImage(src) {
   });
 }
 
-function resizeImage(img, maxWidth, mimeType, quality) {
+function resizeImage(img, maxWidth, mimeType, quality, watermarkText = null) {
   return new Promise((resolve) => {
     let width = img.width;
     let height = img.height;
@@ -97,6 +98,42 @@ function resizeImage(img, maxWidth, mimeType, quality) {
 
     // Draw scaled image
     ctx.drawImage(img, 0, 0, width, height);
+
+    // Apply Watermark if provided
+    if (watermarkText) {
+      ctx.save();
+
+      // Configure Look
+      const fontSize = Math.round(width / 6); // Responsive size
+      ctx.font = `bold ${fontSize}px sans-serif`;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.25)'; // Semi-transparent white
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)'; // Subtle outline
+      ctx.lineWidth = 2;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // Move to center
+      ctx.translate(width / 2, height / 2);
+      ctx.rotate(-45 * Math.PI / 180); // 45 degree tilt
+
+      // Draw Main Large Watermark
+      ctx.fillText(watermarkText, 0, 0);
+      ctx.strokeText(watermarkText, 0, 0);
+
+      // Add secondary repetitions for 'occupying most of the image' effect
+      const smallFontSize = Math.round(fontSize / 3);
+      ctx.font = `${smallFontSize}px sans-serif`;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+
+      // Positions relative to the rotated center
+      const offset = fontSize * 1.5;
+      ctx.fillText(watermarkText, -offset, -offset);
+      ctx.fillText(watermarkText, offset, offset);
+      ctx.fillText(watermarkText, -offset, offset);
+      ctx.fillText(watermarkText, offset, -offset);
+
+      ctx.restore();
+    }
 
     // Convert back to blob
     canvas.toBlob((blob) => {
