@@ -42,6 +42,7 @@ export async function processImageFiles(file, shouldWatermark = false) {
       blob: originalBlob,
       url: URL.createObjectURL(originalBlob),
       name: `${baseName}_${originalWidth}x${originalHeight}${extension}`,
+      cleanName: baseName,
       width: originalWidth,
       height: originalHeight
     },

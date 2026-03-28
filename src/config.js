@@ -27,10 +27,12 @@ export const config = {
       "7f159792ceb947e7601c086304d600fc53efedb9b0c0708613f42237fe412793": { /*  keccak256(0xaddress.toLowerCase()) */
         accessKeyId: "AKIAQSHN3IMEODUOVHPV",
         secretAccessKey: "OSbkASFEGEN8EsIHkvDP+366Ku8A5rX/hAdySUJSvgBeyL/k9hW2XHn73VIh5cJuLJ/M6GDbmEa6x1CJlkRBuV2sp6o=",
+        externalSeed: "on+8l2X/fMysTfnmm9MBAMSgovVK7V67HcRUSoYOi8fckEKhsnSfmzPdshp4/sQ9vNvPS76sSGdsemH/FK6e3Y7mZ//MIsQ=" //email | subject: Guihgo Studio - external seed
       },
       "90ca04421666e9204369dcce766192f6c2dbdc76171a4ea25c639363a191623d": {
         accessKeyId: "AKIAQSHN3IMEJCJC6PUE",
         secretAccessKey: "200zGhNeNGg9dqENjwODPg0v/D0mgrPRqSTanrh1I1WquIfwNsQAgBLP8rk+gGqGxA14J4f+vXzW0eqbw4b613fW5Vc=",
+        externalSeed: "XW5V1U/1EJLapZ9WidIQJoXqJUOxKu8vkxOETdb2Rp6ZgD657XEQUq18Okuxx5Nyv6zq74YCkp+wbr0yvGMEVhvI7hAvAqFZ" //email | subject: Guihgo Studio - external seed
       }
     }
   }

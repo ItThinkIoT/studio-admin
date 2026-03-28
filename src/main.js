@@ -1,5 +1,5 @@
 import '../style.css';
-import { initAuth, getCurrentAccount, encryptDataNative, decryptDataNative, onAccountChanged, getHashedAddress, disconnectWallet } from './auth.js';
+import { initAuth, getCurrentAccount, encryptDataNative, decryptDataNative, onAccountChanged, getHashedAddress, disconnectWallet, sha256 } from './auth.js';
 import { processImageFiles, formatBytes } from './imageProcessor.js';
 import { initAWS, uploadToS3 } from './uploader.js';
 import { config } from './config.js';
@@ -70,10 +70,12 @@ async function handleWalletChange(accounts) {
       try {
         // Prompt for decryption if we don't have the secret key yet
         const decryptedSecret = await decryptDataNative(userCreds.secretAccessKey);
+        const decryptedExternalSeed = await decryptDataNative(userCreds.externalSeed);
         config.aws.accessKeyId = userCreds.accessKeyId;
         config.aws.secretAccessKey = decryptedSecret;
+        config.aws.externalSeed = decryptedExternalSeed;
         initAWS();
-        console.log("AWS SDK re-initialized with decrypted credentials.");
+        console.log("AWS SDK re-initialized with decrypted credentials.", config);
 
         // Show Workspace and Hide Auth Required screen
         const workspace = document.getElementById('workspace');
@@ -508,6 +510,8 @@ function setupListeners() {
       origFolder = 'external/hidden';
     }
 
+    const externalSeed = config.aws.externalSeed || '';
+
     // Validation
     if (!albumName) {
       alert("Please provide an Album Name before uploading.");
@@ -571,7 +575,15 @@ function setupListeners() {
         updateProgress((filesUploaded / totalFiles) * 100);
 
         // Upload Original
-        await uploadToS3(item.original.blob, origName, origFolder, albumName);
+        let finalOrigName = origName;
+        if (categoryName === 'external') {
+          const cleanBaseName = item.original.cleanName;
+          const hashInput = cleanBaseName + externalSeed;
+          const hashedBase = await sha256(hashInput);
+          finalOrigName = `${hashedBase}${origExt}`;
+        }
+
+        await uploadToS3(item.original.blob, finalOrigName, origFolder, albumName);
         filesUploaded++;
         updateProgress((filesUploaded / totalFiles) * 100);
 
