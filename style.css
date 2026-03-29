@@ -42,3 +42,33 @@
     @apply border-brand-emerald bg-brand-emerald/10 shadow-[0_0_30px_rgba(16,185,129,0.15)] scale-[1.01];
   }
 }
+
+/* CropperJS Customization */
+.cropper-view-box,
+.cropper-face {
+  border-radius: 0;
+}
+
+.cropper-line {
+  background-color: var(--color-emerald) !important;
+}
+
+.cropper-point {
+  background-color: var(--color-emerald) !important;
+  width: 8px !important;
+  height: 8px !important;
+}
+
+.cropper-bg {
+  background-image: none !important;
+}
+
+.cropper-modal {
+  opacity: 0.8 !important;
+  background-color: #000 !important;
+}
+
+.cropper-container {
+  max-width: 100% !important;
+  max-height: 85vh !important;
+}
