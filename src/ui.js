@@ -5,6 +5,8 @@ export const els = {
   workspace: document.getElementById('workspace'),
   connectWarning: document.getElementById('connect-warning'),
   categorySelect: document.getElementById('category-select'),
+  priceContainer: document.getElementById('price-container'),
+  priceInput: document.getElementById('price-input'),
   albumInput: document.getElementById('album-name'),
   btnBrowse: document.getElementById('btn-browse'),
   fileInput: document.getElementById('file-input'),

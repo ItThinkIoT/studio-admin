@@ -102,6 +102,19 @@ export async function uploadBatch(onComplete, onError) {
       }
     }
 
+    // 5. Upload sell.json for external category
+    if (categoryName === 'external') {
+      const priceStr = els.priceInput.value;
+      // Convert "R$ 5,17" -> 5.17
+      const price = parseFloat(priceStr.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+      
+      const sellJson = JSON.stringify({ price }, null, 2);
+      const sellBlob = new Blob([sellJson], { type: 'application/json' });
+      await uploadToS3(sellBlob, 'sell.json', 'external/public', albumName);
+      filesUploaded++;
+      updateProgress((filesUploaded / totalFiles) * 100);
+    }
+
     onComplete();
   } catch (err) {
     onError(err);

@@ -170,6 +170,7 @@ function setupListeners() {
 
   // Category & Album
   els.categorySelect.addEventListener('change', handleCategoryChange);
+  els.priceInput.addEventListener('input', formatCurrency);
   
   // Upload Flow
   els.btnCancel.addEventListener('click', resetWorkspace);
@@ -189,8 +190,22 @@ function setupListeners() {
 }
 
 async function handleCategoryChange() {
-  if (!state.processedImages.length) return;
   const isExternal = els.categorySelect.value === 'external';
+  
+  // Show/Hide price container
+  if (isExternal) {
+    els.priceContainer.classList.remove('hidden');
+    els.priceInput.required = true;
+    if (!els.priceInput.value) {
+      els.priceInput.value = 'R$ 5,00';
+    }
+  } else {
+    els.priceContainer.classList.add('hidden');
+    els.priceInput.required = false;
+    els.priceInput.value = '';
+  }
+
+  if (!state.processedImages.length) return;
   setProcessingState(true, 0, state.processedImages.length);
   try {
     for (let i = 0; i < state.processedImages.length; i++) {
@@ -223,7 +238,25 @@ function resetWorkspace() {
   setCoverImageId(null);
   els.fileInput.value = '';
   els.albumInput.value = '';
+  els.priceInput.value = '';
+  els.priceContainer.classList.add('hidden');
+  els.categorySelect.value = 'gallery';
   renderPreviewGrid(removeImage);
   switchViewToUpload();
   updateProgress(0);
+}
+
+function formatCurrency(e) {
+  let value = e.target.value.replace(/\D/g, '');
+  if (value === '') {
+    e.target.value = '';
+    return;
+  }
+  
+  value = value.padStart(3, '0');
+  const integerPart = value.slice(0, -2);
+  const decimalPart = value.slice(-2);
+  
+  const formattedInteger = parseInt(integerPart, 10).toLocaleString('pt-BR');
+  e.target.value = `R$ ${formattedInteger},${decimalPart}`;
 }
