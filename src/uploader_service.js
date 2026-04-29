@@ -39,7 +39,7 @@ export async function uploadBatch(onComplete, onError) {
   els.btnCancel.disabled = true;
   els.uploadProgressContainer.classList.remove('hidden');
 
-  let totalFiles = (state.processedImages.length * 3) + (state.coverImageId ? 1 : 0);
+  let totalFiles = (state.processedImages.length * 3) + (state.coverImageId ? 1 : 0) + (categoryName === 'external' ? 1 : 0);
   let filesUploaded = 0;
 
   try {
@@ -107,7 +107,7 @@ export async function uploadBatch(onComplete, onError) {
       const priceStr = els.priceInput.value;
       // Convert "R$ 5,17" -> 5.17
       const price = parseFloat(priceStr.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
-      
+
       const sellJson = JSON.stringify({ price }, null, 2);
       const sellBlob = new Blob([sellJson], { type: 'application/json' });
       await uploadToS3(sellBlob, 'sell.json', 'external/public', albumName);
